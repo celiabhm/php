@@ -10,10 +10,10 @@
 <body>
     <form class="formulaire_co" method="POST">
         <h1>Formulaire</h1>
-        <label for="fname">Nombre 1 : </label><br>
-        <input type="text" id="nom_article" name="nom_article"><br><br>
-        <label for="lname">Nombre 2 :</label><br>
-        <input type="text" id="contenu_article" name="contenu_article"><br><br>
+        <label for="fname"> Nom : </label><br>
+        <input type="text" id="fname" name="fname"><br><br>
+        <label for="lname"> Contenu :</label><br>
+        <input type="text" id="lname" name="lname"><br><br>
         <input type="submit" value="Ajouter">
     </form>
 
@@ -24,14 +24,26 @@
     if(isset($_POST['nom_article']) && isset($_POST['contenu_article'])){
         $nom_article = $_POST['nom_article'];
         $contenu_article= $_POST['contenu_article'];
-    }
-    // Connexion à la base de données //
+        // Connexion à la base de données //
     $db = new PDO('mysql: host = localhost;dbname=articles','root','',
     array( PDO::ATTR_ERRMODE => PDO ::ERRMODE_EXCEPTION));
     $db ->setAttribute(PDO:: ATTR_DEFAULT_FETCH_MODE, PDO:: FETCH_ASSOC);
 
     // requête pr insérer des données //
-    $sql="INSERT INTO articles(nom_article, contenu_article) VALUES('Stylo','quatres couleurs')";
+    $sql="INSERT INTO article(nom_article, contenu_article) VALUES(:nom_article, :contenu_article)";
+
+    // Requête préparée //
+    //Préparation de la requête SQL nous stockons dans une variable $req la requête à exécuter
+        $req = $db->prepare($sql);
+    // On va "binder" le paramètre correspondant au "non_utilisateur" de type String 
+        $req->bindParam('nom_article', $nom_article, PDO::PARAM_STR);
+        $req->bindParam('contenu_article', $contenu_article, PDO::PARAM_STR);
+    //Une fois tous les paramètres bindés, on peut exécuter la requete
+        $req->execute();
+    }
+    
+
+
     ?>
 </body>
 </html>
